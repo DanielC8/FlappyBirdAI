@@ -72,7 +72,7 @@ class NeuralNetwork {
         }
         this.previousY = gameState.birdY;
         
-        // Enhanced state representation - match Python exactly
+        // Enhanced state representation
         const enhancedState = [
             gameState.gapDistance / 256.0,                    // Normalized gap distance
             gameState.horizontalDistance / 568.0,             // Normalized horizontal distance
@@ -82,24 +82,7 @@ class NeuralNetwork {
             Math.abs(gameState.gapDistance) < 50 ? 1.0 : 0.0    // Binary: well-aligned with gap
         ];
         
-        // Debug logging
-        if (Math.random() < 0.01) { // Log occasionally
-            console.log('Game State:', {
-                gapDistance: gameState.gapDistance,
-                horizontalDistance: gameState.horizontalDistance,
-                birdY: gameState.birdY,
-                velocity: velocity
-            });
-            console.log('Enhanced State:', enhancedState);
-        }
-        
         const result = this.forwardPass(enhancedState);
-        
-        // Debug neural network output
-        if (Math.random() < 0.01) {
-            console.log('NN Output:', result.output, 'Decision:', result.output > 0);
-        }
-        
         return {
             decision: result.output > 0,
             output: result.output,

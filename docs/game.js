@@ -51,13 +51,11 @@ class FlappyBirdGame {
         const minHeight = 50;
         const maxHeight = this.height - this.PIPE_GAP - minHeight - 50;
         const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
-        const bottomHeight = this.height - topHeight - this.PIPE_GAP - 50; // Account for ground
         
         this.pipes.push({
             x: this.width,
             topHeight: topHeight,
             bottomY: topHeight + this.PIPE_GAP,
-            bottomHeight: bottomHeight,
             passed: false
         });
     }
@@ -132,7 +130,7 @@ class FlappyBirdGame {
     }
     
     getGameState() {
-        // Find the next pipe - match Python logic exactly
+        // Find the next pipe
         let nextPipe = null;
         for (const pipe of this.pipes) {
             if (pipe.x + this.PIPE_WIDTH > this.bird.x) {
@@ -145,8 +143,8 @@ class FlappyBirdGame {
             return null;
         }
         
-        // Calculate state values - match Python exactly
-        const gapCenter = nextPipe.topHeight + (this.height - nextPipe.topHeight - nextPipe.bottomHeight) / 2;
+        // Calculate state values
+        const gapCenter = nextPipe.topHeight + this.PIPE_GAP / 2;
         const birdCenter = this.bird.y + this.BIRD_SIZE / 2;
         const gapDistance = gapCenter - birdCenter;
         const horizontalDistance = nextPipe.x - this.bird.x;
