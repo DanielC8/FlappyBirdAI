@@ -56,7 +56,7 @@ To use weights from your Python training:
    ```python
    import json
    
-   def export_weights(agent, filename='web/best_weights.json'):
+   def export_weights(agent, filename='docs/best_weights.json'):
        weights_data = {
            'weights': agent.genotype.tolist(),
            'fitness': agent.fit_score,
