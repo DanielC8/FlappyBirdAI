@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Utility script to export trained AI weights for the docs visualization
+Utility script to export trained AI weights for the web visualization
 """
 
 import json
@@ -10,8 +10,8 @@ import ast
 from genetic import Genetic_AI
 from genetic_controller import run_X_epochs
 
-def export_agent_weights(agent, filename='docs/best_weights.json'):
-    """Export an AI agent's weights to JSON format for docs use"""
+def export_agent_weights(agent, filename='web/best_weights.json'):
+    """Export an AI agent's weights to JSON format for web use"""
     weights_data = {
         'weights': agent.genotype.tolist(),
         'fitness': float(agent.fit_score),
@@ -61,7 +61,7 @@ def export_best_from_csv(csv_file='data/enhanced_round1.csv'):
         print(f"✅ Extracted {len(weights_list)} weights from training data")
         
         # Export the weights
-        export_agent_weights(best_agent, 'docs/best_weights.json')
+        export_agent_weights(best_agent, 'web/best_weights.json')
         
         print(f"🎯 Best trained model exported! Fitness: {best_fitness:.2f}")
         return best_agent
@@ -102,7 +102,7 @@ def train_and_export_best_model():
     # Export the weights
     export_agent_weights(trained_agent)
     
-    print("🎯 Best model exported! You can now use it in the docs visualization.")
+    print("🎯 Best model exported! You can now use it in the web visualization.")
 
 def create_sample_trained_weights():
     """Create sample weights that perform reasonably well"""
@@ -136,7 +136,7 @@ def create_sample_trained_weights():
     
     return np.array(input_hidden + hidden_biases + hidden_output + output_bias)
 
-def load_and_test_exported_weights(filename='docs/best_weights.json'):
+def load_and_test_exported_weights(filename='web/best_weights.json'):
     """Load exported weights and test them"""
     try:
         with open(filename, 'r') as f:

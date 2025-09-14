@@ -90,7 +90,7 @@ python test_enhanced_ai.py
 python export_weights.py
 # Choose option 1: Export best weights from enhanced_round1.csv
 
-# Open docs/index.html in your browser
+# Open web/index.html in your browser
 ```
 
 ### 3. Manual Testing
