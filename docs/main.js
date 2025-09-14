@@ -254,6 +254,13 @@ class FlappyBirdAIApp {
 // Initialize the application when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new FlappyBirdAIApp();
+    
+    // Try to load trained weights automatically
+    loadWeightsFromFile().then(data => {
+        if (data) {
+            console.log('Successfully loaded trained weights!');
+        }
+    });
 });
 
 // Export trained weights from Python model (utility function)
@@ -274,10 +281,10 @@ def export_best_agent_weights(agent, filename='best_weights.json'):
         }
     }
     
-    with open(f'web/{filename}', 'w') as f:
+    with open(f'docs/{filename}', 'w') as f:
         json.dump(weights_data, f, indent=2)
     
-    print(f"Weights exported to web/{filename}")
+    print(f"Weights exported to docs/{filename}")
 
 # Call this after training:
 # export_best_agent_weights(best_agent)
@@ -294,6 +301,7 @@ async function loadWeightsFromFile(filename = 'best_weights.json') {
         if (window.app) {
             window.app.aiController.ai = new NeuralNetwork(data.weights);
             console.log('Loaded trained weights with fitness:', data.fitness);
+            console.log('Total weights loaded:', data.weights.length);
         }
         
         return data;
