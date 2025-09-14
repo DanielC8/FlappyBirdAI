@@ -26,10 +26,10 @@ def export_agent_weights(agent, filename='docs/best_weights.json'):
         }
     }
     
-    with open(filename, 'w') as f:
+    with open(f'docs/{filename}', 'w') as f:
         json.dump(weights_data, f, indent=2)
     
-    print(f"✅ Weights exported to {filename}")
+    print(f"Weights exported to docs/{filename}")
     print(f"   Fitness score: {agent.fit_score:.2f}")
     print(f"   Total weights: {len(agent.genotype)}")
     return weights_data
@@ -61,7 +61,7 @@ def export_best_from_csv(csv_file='data/enhanced_round1.csv'):
         print(f"✅ Extracted {len(weights_list)} weights from training data")
         
         # Export the weights
-        export_agent_weights(best_agent, 'docs/best_weights.json')
+        export_agent_weights(best_agent, 'best_weights.json')
         
         print(f"🎯 Best trained model exported! Fitness: {best_fitness:.2f}")
         return best_agent

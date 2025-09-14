@@ -55,7 +55,7 @@ FlappyBirdAI/
 │   │   └── ...
 │   └── models/                # Saved model weights
 ├── 🌐 Web Visualization
-│   ├── web/
+│   ├── docs/
 │   │   ├── index.html         # Main dashboard interface
 │   │   ├── game.js            # JavaScript game engine
 │   │   ├── ai.js              # Neural network implementation
@@ -239,9 +239,9 @@ crossover_rate = 0.8     # Breeding probability
 - Ensure mutation rate isn't too high/low
 
 **Web visualization not loading**
-- Ensure `best_weights.json` exists in web/ folder
+- Ensure `best_weights.json` exists in docs/ folder
 - Check browser console for JavaScript errors
-- Verify all web files are in correct locations
+- Verify all docs files are in correct locations
 
 **Poor AI performance**
 - Train for more generations
