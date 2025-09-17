@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird AI Visualization</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 2.5em;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .game-canvas-container {
+            position: relative;
+            border: 3px solid #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            background: #87CEEB;
+        }
+
+        #gameCanvas {
+            display: block;
+            border-radius: 7px;
+        }
+
+        .controls-panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 300px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group h3 {
+            margin: 0 0 10px 0;
+            color: #fff;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 5px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+        }
+
+        .stats {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .ai-visualization {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .neural-network {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 200px;
+        }
+
+        .layer {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 100%;
+        }
+
+        .neuron {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #74b9ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            margin: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .neuron.active {
+            background: #00b894;
+            box-shadow: 0 0 15px rgba(0, 184, 148, 0.6);
+        }
+
+        .input-labels {
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .decision-indicator {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .decision-jump {
+            background: rgba(255, 107, 107, 0.3);
+            border: 2px solid #ff6b6b;
+        }
+
+        .decision-fall {
+            background: rgba(116, 185, 255, 0.3);
+            border: 2px solid #74b9ff;
+        }
+
+        .model-selector {
+            margin: 10px 0;
+        }
+
+        select {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        select option {
+            background: #333;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .controls-panel {
+                min-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐦 Flappy Bird AI Visualization</h1>
+        
+        <div class="game-container">
+            <div class="game-canvas-container">
+                <canvas id="gameCanvas" width="568" height="512"></canvas>
+            </div>
+            
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h3>🎮 Game Controls</h3>
+                    <button id="startBtn">Start AI</button>
+                    <button id="pauseBtn" class="secondary">Pause</button>
+                    <button id="resetBtn" class="secondary">Reset</button>
+                </div>
+
+                <div class="control-group">
+                    <h3>🤖 AI Model</h3>
+                    <div class="model-selector">
+                        <select id="modelSelect">
+                            <option value="random">Random AI (Baseline)</option>
+                            <option value="enhanced" selected>Enhanced Neural Network</option>
+                            <option value="simple">Simple Linear Model</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>📊 Statistics</h3>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <span>Score:</span>
+                            <span id="score">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>High Score:</span>
+                            <span id="highScore">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Games Played:</span>
+                            <span id="gamesPlayed">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Avg Score:</span>
+                            <span id="avgScore">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>Survival Time:</span>
+                            <span id="survivalTime">0s</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>🧠 AI Decision Making</h3>
+                    <div class="ai-visualization">
+                        <div class="decision-indicator" id="decision">
+                            Waiting...
+                        </div>
+                        
+                        <div class="neural-network">
+                            <div class="layer">
+                                <div class="input-labels">
+                                    <div>Gap Dist</div>
+                                    <div>Pipe Dist</div>
+                                    <div>Bird Y</div>
+                                    <div>Velocity</div>
+                                    <div>Urgency</div>
+                                    <div>Aligned</div>
+                                </div>
+                            </div>
+                            
+                            <div class="layer" id="inputLayer">
+                                <div class="neuron" id="input0">0</div>
+                                <div class="neuron" id="input1">0</div>
+                                <div class="neuron" id="input2">0</div>
+                                <div class="neuron" id="input3">0</div>
+                                <div class="neuron" id="input4">0</div>
+                                <div class="neuron" id="input5">0</div>
+                            </div>
+                            
+                            <div class="layer" id="hiddenLayer">
+                                <div class="neuron">H1</div>
+                                <div class="neuron">H2</div>
+                                <div class="neuron">H3</div>
+                                <div class="neuron">H4</div>
+                                <div class="neuron">H5</div>
+                                <div class="neuron">H6</div>
+                                <div class="neuron">H7</div>
+                                <div class="neuron">H8</div>
+                            </div>
+                            
+                            <div class="layer" id="outputLayer">
+                                <div class="neuron" id="output">OUT</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+    <script src="ai.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
