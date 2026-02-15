@@ -66,7 +66,7 @@ def compute_fitness(agent, num_trials):
 
 
 def run_X_epochs(num_epochs=10, num_trials=5, pop_size=100, aggregate='lin', num_elite=5, survival_rate=.35,
-                 logging_file='default.csv'):
+                 logging_file='default'):
     # data collection over epochs
     data = [[1, np.ones(4), 1, np.ones(4), 1, np.ones(4)]]
     headers = ['avg_fit', 'avg_gene', 'top_fit', 'top_gene', 'elite_fit', 'elite_gene']
@@ -97,7 +97,7 @@ def run_X_epochs(num_epochs=10, num_trials=5, pop_size=100, aggregate='lin', num
 
         # compute % of fitness accounted for by each agent
         for agent in population:
-            agent.fit_rel = agent.fit_score / total_fitness
+            agent.fit_rel = agent.fit_score / total_fitness if total_fitness > 0 else 0
 
         """
         Selection
