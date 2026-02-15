@@ -339,12 +339,20 @@ def mains(agent1 = Genetic_AI()):
     while not done:
         clock.tick(FPS)
 
+        # Process events to prevent the window from freezing
+        for e in pygame.event.get():
+            if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
+                done = True
+                break
+
+        if done:
+            break
+
         # Handle this 'manually'.  If we used pygame.time.set_timer(),
         # pipe addition would be messed up when paused.
         if not (paused or frame_clock % msec_to_frames(PipePair.ADD_INTERVAL)):
             pp = PipePair(images['pipe-end'], images['pipe-body'])
             pipes.append(pp)
-
 
         if pipes:
             next_pipe = next((p for p in pipes if p.x + PipePair.WIDTH > bird.x), None)
@@ -352,7 +360,7 @@ def mains(agent1 = Genetic_AI()):
                 centerGap = next_pipe.top_height_px + (512 - next_pipe.top_height_px - next_pipe.bottom_height_px) / 2
                 birdCenter = bird.y + 16
                 gapDistance = centerGap - birdCenter
-                
+
                 # Enhanced state with more information
                 state = [
                     gapDistance,                    # Distance to gap center

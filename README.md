@@ -1,286 +1,135 @@
-# 🐦 Flappy Bird AI - Genetic Algorithm & Neural Network
+# Flappy Bird AI
 
-An AI that learns to play Flappy Bird using genetic algorithms and neural networks, with a real-time web visualization dashboard.
+AI that learns to play Flappy Bird using genetic algorithms and neural networks. Includes a Python training pipeline and a browser-based visualization dashboard.
 
-## 🎯 Project Overview
+## How It Works
 
-This project implements an AI agent that learns to play Flappy Bird through evolutionary computation. The AI uses a neural network (6 inputs → 8 hidden neurons → 1 output) that evolves over generations using genetic algorithms to improve its performance.
+1. **Initialize**: Create a population of 50 neural networks with random weights.
+2. **Evaluate**: Each network plays Flappy Bird. Fitness = survival time + (score x 5).
+3. **Select**: Top performers survive via tournament selection. Top 5 are copied unchanged (elitism).
+4. **Breed**: Parents are combined using blend crossover weighted by fitness.
+5. **Mutate**: Offspring weights are perturbed with Gaussian noise (std=0.1, clipped to [-3, 3]).
+6. **Repeat**: Run for N generations. Best agents are exported for the web demo.
 
-### Key Features
-
-- **Enhanced Neural Network AI**: Multi-layer perceptron with velocity tracking and advanced state representation
-- **Genetic Algorithm Training**: Population-based evolution with tournament selection, crossover, and mutation
-- **Real-time Web Visualization**: Interactive dashboard showing AI decision-making process
-- **Performance Analytics**: Comprehensive training statistics and model comparison tools
-
-## 🏗️ Architecture
-
-### Neural Network Structure
-```
-Input Layer (6 neurons):
-├── Gap Distance (normalized)
-├── Horizontal Distance to Pipe
-├── Bird Y Position  
-├── Bird Velocity
-├── Urgency Factor
-└── Alignment Indicator
-
-Hidden Layer (8 neurons):
-└── Tanh activation function
-
-Output Layer (1 neuron):
-└── Decision: Jump (>0) or Fall (≤0)
-```
-
-### Genetic Algorithm Components
-- **Population Size**: 50 agents per generation
-- **Selection**: Tournament selection with elitism
-- **Crossover**: Blend crossover weighted by fitness
-- **Mutation**: Additive Gaussian noise with clipping
-- **Fitness**: Survival time + 5×score
-
-## 📁 Project Structure
+## Neural Network
 
 ```
-FlappyBirdAI/
-├── 🎮 Core Game & AI
-│   ├── flappybird.py          # Pygame-based Flappy Bird game
-│   ├── genetic.py             # Enhanced neural network AI class
-│   ├── genetic_controller.py  # Genetic algorithm training loop
-│   └── genetic_helper.py      # Utility functions
-├── 📊 Data & Models
-│   ├── data/                  # Training results and statistics
-│   │   ├── enhanced_round1.csv
-│   │   ├── round2.csv
-│   │   └── ...
-│   └── models/                # Saved model weights
-├── 🌐 Web Visualization
-│   ├── web/
-│   │   ├── index.html         # Main dashboard interface
-│   │   ├── game.js            # JavaScript game engine
-│   │   ├── ai.js              # Neural network implementation
-│   │   ├── main.js            # Application controller
-│   │   └── README.md          # Web-specific documentation
-├── 🛠️ Utilities
-│   ├── export_weights.py      # Export trained models for web
-│   └── test_enhanced_ai.py    # Testing and validation
-└── 📋 Documentation
-    └── README.md              # This file
+Input (6)            Hidden (8, tanh)     Output (1)
+─────────            ────────────────     ──────────
+Gap distance    ──┐
+Horiz. distance ──┤
+Bird Y position ──┼──→  8 neurons  ──→  Jump (>0) / Fall (<=0)
+Velocity        ──┤
+Urgency factor  ──┤
+Alignment flag  ──┘
 ```
 
-## 🚀 Quick Start
+Total weights: 65 (48 input-hidden + 8 hidden biases + 8 hidden-output + 1 output bias). Xavier initialization. Inputs are normalized to roughly [-1, 1].
 
-### Prerequisites
+## Project Structure
+
+```
+flappybird.py          - Pygame game engine (manual play + AI play)
+genetic.py             - Neural network AI class
+genetic_controller.py  - Genetic algorithm training loop
+genetic_helper.py      - Helper functions for state extraction
+export_weights.py      - Export trained models to JSON for web use
+test_enhanced_ai.py    - Neural network unit tests
+test_js_python_match.py - Verify JS/Python implementations match
+web/
+  index.html           - Dashboard interface
+  game.js              - Canvas-based game engine
+  ai.js                - JS neural network implementation
+  main.js              - App controller, stats, UI
+  best_weights.json    - Pre-trained model weights
+data/                  - Training run CSVs
+images/                - Game sprites (bird, pipes, background)
+```
+
+## Usage
+
+### Install dependencies
+
 ```bash
-pip install pygame numpy pandas
+pip install -r requirements.txt
 ```
 
-### 1. Train the AI
+### Train the AI
+
 ```bash
-# Run genetic algorithm training
 python genetic_controller.py
-
-# Or run a quick test
-python test_enhanced_ai.py
 ```
 
-### 2. View Web Visualization
-```bash
-# Export trained weights
-python export_weights.py
-# Choose option 1: Export best weights from enhanced_round1.csv
+Default: 50 epochs, population of 50, 3 trials per fitness evaluation. Results are saved to `data/`.
 
-# Open web/index.html in your browser
-```
+Custom training:
 
-### 3. Manual Testing
-```bash
-# Test a single AI agent
-python flappybird.py
-```
-
-## 🧬 Training Process
-
-### Genetic Algorithm Flow
-1. **Initialize Population**: Create 50 random neural networks
-2. **Evaluate Fitness**: Each agent plays multiple games
-3. **Selection**: Keep top performers (elitism) + tournament selection
-4. **Crossover**: Blend weights from successful parents
-5. **Mutation**: Add small random variations
-6. **Repeat**: Continue for specified generations
-
-### Training Configuration
-```python
-run_X_epochs(
-    num_epochs=50,      # Number of generations
-    num_trials=3,       # Games per fitness evaluation
-    pop_size=50,        # Population size
-    num_elite=5,        # Elite agents preserved
-    aggregate='blend',  # Crossover strategy
-    survival_rate=0.35  # Parent selection rate
-)
-```
-
-## 📈 Performance Metrics
-
-### Fitness Function
-```
-fitness = survival_time + (score × 5)
-```
-
-### Key Improvements Over Basic AI
-- **67% better average performance** vs simple linear model
-- **Faster convergence** through enhanced state representation
-- **More stable training** with improved genetic operations
-- **Better generalization** across different pipe configurations
-
-## 🎮 Web Dashboard Features
-
-### Real-time Visualization
-- **Game Canvas**: Live Flappy Bird gameplay
-- **Neural Network Display**: Neuron activation visualization  
-- **Decision Indicator**: Current AI choice (Jump/Fall)
-- **Performance Stats**: Score, survival time, games played
-
-### AI Model Comparison
-- **Enhanced Neural Network**: Full 6→8→1 architecture
-- **Simple Linear Model**: Basic 4-weight linear combination
-- **Random AI**: Baseline random behavior
-
-### Interactive Controls
-- Start/Pause/Reset gameplay
-- Model selection dropdown
-- Automatic game restart
-- Performance statistics tracking
-
-## 🔧 Advanced Usage
-
-### Custom Training
 ```python
 from genetic_controller import run_X_epochs
 
-# Custom training parameters
 run_X_epochs(
-    num_epochs=100,
-    pop_size=100,
-    num_trials=5,
-    logging_file="custom_training"
+    num_epochs=50,
+    num_trials=3,
+    pop_size=50,
+    num_elite=5,
+    aggregate='blend',
+    logging_file="my_run"
 )
 ```
 
-### Export Best Model
-```python
-from export_weights import export_best_from_csv
+### Export trained weights for web
 
-# Export from specific training run
-agent = export_best_from_csv('data/enhanced_round1.csv')
+```bash
+python export_weights.py
+# Select option 1 to export best weights from a training CSV
 ```
 
-### Load Trained Weights
-```python
-from genetic import Genetic_AI
-import numpy as np
+### Run the web visualization
 
-# Load specific weights
-weights = np.load('best_weights.npy')
-ai = Genetic_AI(genotype=weights)
+Open `web/index.html` in a browser. The dashboard shows:
+- Live AI gameplay on canvas
+- Neural network activations in real time
+- Score, high score, average score, survival time
+- Model selector (Enhanced NN, Simple Linear, Random baseline)
+
+### Play manually
+
+```bash
+python flappybird.py
 ```
 
-## 📊 Training Results Analysis
+Controls: Space/Up/Enter to jump, P to pause, Esc to quit.
 
-### Typical Performance Evolution
-- **Generation 1-10**: Random exploration (avg score: 0-2)
-- **Generation 11-25**: Basic pattern learning (avg score: 3-8)
-- **Generation 26-40**: Skill refinement (avg score: 8-15)
-- **Generation 41+**: Optimization (avg score: 15+)
+## Key Files
 
-### Best Recorded Performance
-- **Highest Score**: 611+ pipes passed
-- **Longest Survival**: 271+ seconds
-- **Convergence Time**: ~30 generations
+### `genetic.py` - Genetic_AI class
 
-## 🛠️ Customization Options
+- `__init__()`: Creates network with Xavier-initialized weights or from a provided genotype.
+- `_forward_pass(state)`: Runs input through hidden layer (tanh) to output.
+- `getMove(state)`: Normalizes raw game state into 6 features, computes forward pass, returns True (jump) or False (fall).
 
-### Modify Neural Network
-```python
-# In genetic.py
-def __init__(self, num_features=6, hidden_size=8):
-    # Adjust architecture here
-```
+### `genetic_controller.py` - Training loop
 
-### Adjust Game Physics
-```python
-# In flappybird.py
-GRAVITY = 0.5        # Bird fall speed
-JUMP_FORCE = -8      # Jump strength
-PIPE_SPEED = 2       # Pipe movement speed
-```
+- `run_X_epochs()`: Main training function. Evaluates population, selects parents, breeds next generation.
+- `compute_fitness()`: Runs agent through multiple game trials, removes outlier scores.
+- `cross()`: Crossover operator (uniform, blend, or single-point).
+- `tournament_selection()`: Selects parent from random subset of top performers.
 
-### Tune Genetic Algorithm
-```python
-# In genetic_controller.py
-mutation_rate = 0.1      # Mutation strength
-tournament_size = 3      # Selection pressure
-crossover_rate = 0.8     # Breeding probability
-```
+### `flappybird.py` - Game engine
 
-## 🐛 Troubleshooting
+- `Bird`: Player sprite with physics (gravity sink, cosine-smoothed climb).
+- `PipePair`: Randomly generated pipe obstacles with sprite-based collision.
+- `mains(agent)`: Game loop for AI play. Returns fitness score.
+- `main()`: Game loop for manual (keyboard) play.
 
-### Common Issues
+## Requirements
 
-**Training is slow**
-- Reduce `pop_size` and `num_trials`
-- Use fewer epochs for testing
-- Check CPU usage during training
+- Python 3
+- pygame
+- numpy
+- pandas
+- A modern browser for the web visualization
 
-**AI not improving**
-- Verify fitness function is working
-- Check for proper state normalization
-- Ensure mutation rate isn't too high/low
+## License
 
-**Web visualization not loading**
-- Ensure `best_weights.json` exists in web/ folder
-- Check browser console for JavaScript errors
-- Verify all web files are in correct locations
-
-**Poor AI performance**
-- Train for more generations
-- Adjust neural network architecture
-- Modify state representation features
-
-## 📚 Technical Details
-
-### State Representation
-The AI receives 6 normalized inputs:
-1. **Gap Distance** (-1 to 1): Vertical offset from pipe center
-2. **Horizontal Distance** (0 to 1): Distance to next pipe
-3. **Bird Height** (0 to 1): Current Y position
-4. **Velocity** (-1 to 1): Current movement speed
-5. **Urgency** (0 to 1): Proximity-based urgency factor
-6. **Alignment** (0 or 1): Binary well-positioned indicator
-
-### Genetic Operations
-- **Xavier Initialization**: Proper weight initialization for training stability
-- **Tournament Selection**: Better parent selection than fitness proportionate
-- **Blend Crossover**: Weighted average based on parent fitness
-- **Gaussian Mutation**: Additive noise with clipping to prevent extremes
-
-## 🤝 Contributing
-
-Feel free to enhance the project:
-- Implement different neural network architectures
-- Add new genetic algorithm operators
-- Improve the web visualization
-- Optimize training performance
-- Add new game variations
-
-## 📄 License
-
-This project is open source. Feel free to use, modify, and distribute.
-
-## 🙏 Acknowledgments
-
-- Original Flappy Bird game concept
-- Pygame community for game development tools
-- Genetic algorithm research community
-- Neural network and AI/ML community
+MIT
