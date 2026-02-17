@@ -2,6 +2,8 @@
 
 AI that learns to play Flappy Bird using genetic algorithms and neural networks. Includes a Python training pipeline and a browser-based visualization dashboard.
 
+![Demo of AI learning to play Flappy Bird](flappydemotrain.gif)
+
 ## How It Works
 
 1. **Initialize**: Create a population of 50 neural networks with random weights.
